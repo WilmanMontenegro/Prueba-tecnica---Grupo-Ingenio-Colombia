@@ -1,9 +1,10 @@
 import './App.css';
-import Table from './components/Table';
+import DataGrid from './components/DataGrid';
+import Table from './components/DataGrid';
 function App() {
   return (
     <div className="App">
-      <Table/>
+      <DataGrid/>
     </div>
   );
 }
