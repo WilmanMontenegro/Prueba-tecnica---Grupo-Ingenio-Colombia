@@ -11,29 +11,29 @@ import {
     ModalFooter,
 } from "reactstrap";
 
-type handleInputChange=ChangeEvent<HTMLInputElement>//definiendo el evento
-
+type handleInputChange = ChangeEvent<HTMLInputElement>; //definiendo el evento
+interface User {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    status: boolean;
+}
+const initialUserState: User = {
+    id: 0,
+    firstName: "",
+    lastName: "",
+    email: "",
+    status: false,
+}; //definiendo el estado inicial
 function DataGrid() {
     //se crea una interface para describir los datos que se van a recibir
-    interface User {
-        id: number;
-        firstName: string;
-        lastName: string;
-        email: string;
-        status: boolean;
-    }
-    
+
     //se crea un componente de función que renderice los datos recibidos de la API.
     const [users, setUsers] = useState<User[]>([]);
     const [modalInsertar, setModalInsertar] = useState(false);
-    const [user, setUser] = useState({
-        id: users.length + 1,
-        firstName: "",
-        lastName: "",
-        email: "",
-        status: false,
-    })
-
+    const [user, setUser] = useState<User>(initialUserState);
+    const [isChecked, setIsChecked] = useState(false);
     useEffect(() => {
         const fetchPost = async () => {
             const response = await fetch(
@@ -41,27 +41,34 @@ function DataGrid() {
             );
             const data = await response.json();
             setUsers(data);
+            setUser({ ...user, id: data.length + 1 });
         };
         fetchPost();
     }, []);
-
-   const mostrarModalInsertar=()=> {
+    const mostrarModalInsertar = () => {
         setModalInsertar(true);
-    }
-   
-    
-    const handleChange = (e: handleInputChange)=>{
+    };
+    const cerrarModalInsertar = () => {
+        setModalInsertar(false);
+    };
+
+    const handleChange = (e: handleInputChange) => {
+        e.preventDefault();
         setUser({
             ...user,
-            [e.target.name]: e.target.value
-        })
-    }
-    
-    const insert=()=>{
-        setUsers([...users, user])
-        console.log(user)
-        setModalInsertar(false)
-    }
+            [e.target.name]: e.target.value,
+        });
+    };
+    const handleCheckChange = (e: handleInputChange) => {
+        const { checked } = e.target;
+        setIsChecked(checked);
+        setUser({ ...user, status: checked });
+    };
+    const insert = () => {
+        console.log(user);
+        setUsers([...users, user]);
+        setModalInsertar(false);
+    };
     return (
         <>
             <div className="container">
@@ -160,20 +167,22 @@ function DataGrid() {
                             className="form-check-input"
                             name="status"
                             type="checkbox"
-                            value={user.status ? 'true' : 'false'}
-                            //onChange={this.handleChange}
+                            checked={isChecked}
+                            onChange={handleCheckChange}
                         />
                     </FormGroup>
                 </ModalBody>
 
                 <ModalFooter>
-                    <Button
-                        color="primary"
-                        onClick={insert}
-                    >
+                    <Button color="primary" onClick={insert}>
                         Insertar
                     </Button>
-                    <Button className="btn btn-danger">Cancelar</Button>
+                    <Button
+                        className="btn btn-danger"
+                        onClick={cerrarModalInsertar}
+                    >
+                        Cancelar
+                    </Button>
                 </ModalFooter>
             </Modal>
         </>
