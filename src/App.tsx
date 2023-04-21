@@ -1,6 +1,5 @@
 import './App.css';
 import DataGrid from './components/DataGrid';
-import Table from './components/DataGrid';
 function App() {
   return (
     <div className="App">

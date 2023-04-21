@@ -31,6 +31,7 @@ function DataGrid() {
     const [modalInsertar, setModalInsertar] = useState(false);
     const [user, setUser] = useState<User>(initialUserState);
     const [isChecked, setIsChecked] = useState(false);
+    const [id, setId] = useState<number>(0);
     useEffect(() => {
         const fetchPost = async () => {
             const response = await fetch(
@@ -39,7 +40,7 @@ function DataGrid() {
             const data = await response.json();
             setUsers(data);
             //setUser({ ...user, id: data.length + 1 });
-            setUser((prevUser) => ({ ...prevUser, id: data.length + 1 }));
+            setUser((prevUser) => ({ ...prevUser, id: users.length + 1 }));
         };
         fetchPost();
     }, []);
