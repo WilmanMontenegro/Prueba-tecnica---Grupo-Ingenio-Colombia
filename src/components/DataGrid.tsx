@@ -69,6 +69,10 @@ function DataGrid() {
         setUsers([...users, user]);
         setModalInsertar(false);
     };
+    const deleteUser = (id:number) => {
+        const newUsers = users.filter((user) => user.id !== id);
+        setUsers(newUsers);
+    }
     return (
         <>
             <div className="container">
@@ -93,7 +97,7 @@ function DataGrid() {
                                     <td>{user.lastName}</td>
                                     <td>{user.email}</td>
                                     <td>
-                                        <button className="btn btn-danger">
+                                        <button className="btn btn-danger" onClick={() => deleteUser(user.id)}>
                                             Eliminar
                                         </button>
                                     </td>
