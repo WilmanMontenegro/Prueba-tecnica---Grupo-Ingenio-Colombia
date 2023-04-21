@@ -1,5 +1,5 @@
 import { table } from "console";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import {
     Table,
     Button,
@@ -10,6 +10,9 @@ import {
     FormGroup,
     ModalFooter,
 } from "reactstrap";
+
+type handleInputChange=ChangeEvent<HTMLInputElement>//definiendo el evento
+
 function DataGrid() {
     //se crea una interface para describir los datos que se van a recibir
     interface User {
@@ -19,54 +22,46 @@ function DataGrid() {
         email: string;
         status: boolean;
     }
-    const column = [
-        {
-            title: "Nombre",
-            fiel: "firstName",
-        },
-        {
-            title: "apellido",
-            fiel: "lastName",
-        },
-        {
-            title: "email",
-            fiel: "email",
-        },
-    ];
+    
     //se crea un componente de función que renderice los datos recibidos de la API.
     const [users, setUsers] = useState<User[]>([]);
     const [modalInsertar, setModalInsertar] = useState(false);
+    const [user, setUser] = useState({
+        id: users.length + 1,
+        firstName: "",
+        lastName: "",
+        email: "",
+        status: false,
+    })
 
     useEffect(() => {
         const fetchPost = async () => {
             const response = await fetch(
                 "https://api.fake-rest.refine.dev/users"
             );
-            const post = await response.json();
-            setUsers(post);
+            const data = await response.json();
+            setUsers(data);
         };
         fetchPost();
     }, []);
 
-    function mostrarModalInsertar() {
+   const mostrarModalInsertar=()=> {
         setModalInsertar(true);
     }
-    function insertar() {
-        const inputNombre = document.querySelector(
-            'input[name="nombre"]'
-        ) as HTMLInputElement; // asegurarse de que el tipo sea HTMLInputElement
-        const nombre = inputNombre.value;
-        let newUser: User = {
-            firstName: nombre,
-            lastName: "apellido",
-            email: "email",
-            id: users.length + 1,
-            status: true,
-        };
-        setUsers([...users, newUser]);
-        setModalInsertar(false);
+   
+    
+    const handleChange = (e: handleInputChange)=>{
+        setUser({
+            ...user,
+            [e.target.name]: e.target.value
+        })
     }
-
+    
+    const insert=()=>{
+        setUsers([...users, user])
+        console.log(user)
+        setModalInsertar(false)
+    }
     return (
         <>
             <div className="container">
@@ -131,9 +126,10 @@ function DataGrid() {
                         <label>Nombre:</label>
                         <input
                             className="form-control"
-                            name="nombre"
+                            name="firstName"
                             type="text"
-                            //onChange={this.handleChange}
+                            value={user.firstName}
+                            onChange={handleChange}
                         />
                     </FormGroup>
 
@@ -141,9 +137,10 @@ function DataGrid() {
                         <label>Apellido:</label>
                         <input
                             className="form-control"
-                            name="apellido"
+                            name="lastName"
                             type="text"
-                            //onChange={this.handleChange}
+                            value={user.lastName}
+                            onChange={handleChange}
                         />
                     </FormGroup>
                     <FormGroup>
@@ -152,6 +149,18 @@ function DataGrid() {
                             className="form-control"
                             name="email"
                             type="text"
+                            value={user.email}
+                            onChange={handleChange}
+                        />
+                    </FormGroup>
+
+                    <FormGroup>
+                        <label>Activo: </label>
+                        <input
+                            className="form-check-input"
+                            name="status"
+                            type="checkbox"
+                            value={user.status ? 'true' : 'false'}
                             //onChange={this.handleChange}
                         />
                     </FormGroup>
@@ -160,7 +169,7 @@ function DataGrid() {
                 <ModalFooter>
                     <Button
                         color="primary"
-                        //onClick={insertar}
+                        onClick={insert}
                     >
                         Insertar
                     </Button>
