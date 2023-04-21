@@ -1,16 +1,13 @@
-import { table } from "console";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect,useState } from "react";
 import {
-    Table,
     Button,
-    Container,
     Modal,
     ModalHeader,
     ModalBody,
     FormGroup,
     ModalFooter,
 } from "reactstrap";
-
+import "./styles/dataGrid.css"
 type handleInputChange = ChangeEvent<HTMLInputElement>; //definiendo el evento
 interface User {
     id: number;
@@ -41,7 +38,8 @@ function DataGrid() {
             );
             const data = await response.json();
             setUsers(data);
-            setUser({ ...user, id: data.length + 1 });
+            //setUser({ ...user, id: data.length + 1 });
+            setUser((prevUser) => ({ ...prevUser, id: data.length + 1 }));
         };
         fetchPost();
     }, []);
@@ -69,15 +67,18 @@ function DataGrid() {
         setUsers([...users, user]);
         setModalInsertar(false);
     };
-    const deleteUser = (id:number) => {
-        const newUsers = users.filter((user) => user.id !== id);
-        setUsers(newUsers);
-    }
+    const deleteUser = (id: number) => {
+        var opcion = window.confirm("¿Está seguro que desea eliminar el usuario con id: " + id + "?");
+        if (opcion === true) {
+            const newUsers = users.filter((user) => user.id !== id);
+            setUsers(newUsers);
+        }
+    };
     return (
         <>
             <div className="container">
-                <h1>lista de programadores</h1>
-                <table>
+                <h1 className="text-center">LISTA DE USUARIOS</h1>
+                <table className="table ">
                     <thead>
                         <tr>
                             <th>Id</th>
@@ -97,7 +98,10 @@ function DataGrid() {
                                     <td>{user.lastName}</td>
                                     <td>{user.email}</td>
                                     <td>
-                                        <button className="btn btn-danger" onClick={() => deleteUser(user.id)}>
+                                        <button
+                                            className="btn btn-danger"
+                                            onClick={() => deleteUser(user.id)}
+                                        >
                                             Eliminar
                                         </button>
                                     </td>
@@ -105,13 +109,14 @@ function DataGrid() {
                             ))}
                     </tbody>
                 </table>
-                <button
-                    className="btn btn-primary"
-                    onClick={mostrarModalInsertar}
-                >
-                    {" "}
-                    Agregar Nuevo
-                </button>
+                <div className="d-flex justify-content-center">
+                    <button
+                        className="btn btn-primary"
+                        onClick={mostrarModalInsertar}
+                    >
+                        Agregar Nuevo
+                    </button>
+                </div>
             </div>
 
             <Modal isOpen={modalInsertar}>
